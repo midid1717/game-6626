@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trở thành triệu phú với Minh Diệu xđ 🌸</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- React & ReactDOM CDNs -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel CDN for JSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FFF0F5;
+      margin: 0;
+      -webkit-tap-highlight-color: transparent;
+      color: #D02090;
+    }
+    .space-grotesk {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    /* Simple custom utilities since we are in a single HTML */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    main {
+      background: linear-gradient(135deg, #FFF0F5 0%, #FFB6C1 50%, #FFC0CB 100%);
+      background-attachment: fixed;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 255, 255, 0.82);
+      box-shadow: 0 8px 32px 0 rgba(255, 182, 193, 0.2);
+    }
+    .pink-button {
+      background: linear-gradient(to bottom, #FF69B4, #D02090);
+      box-shadow: 0 6px 0 #A01070, 0 12px 20px rgba(208, 32, 144, 0.3);
+      transition: all 0.1s ease;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .pink-button:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #A01070, 0 6px 10px rgba(208, 32, 144, 0.3);
+    }
+    .text-3d {
+      text-shadow: 2px 2px 0px #FFB6C1, 4px 4px 0px rgba(208, 32, 144, 0.15);
+    }
+    .card-3d {
+      background: white;
+      border-bottom: 6px solid #FFB6C1;
+      transition: all 0.2s ease;
+    }
+    .card-3d:hover {
+      transform: translateY(-4px);
+      border-bottom-width: 10px;
+    }
+    .card-3d:active {
+      transform: translateY(2px);
+      border-bottom-width: 4px;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(3deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .spin-slow {
+      animation: spin-slow 15s linear infinite;
+    }
+    @keyframes pulse-soft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .pulse-soft {
+      animation: pulse-soft 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback, useRef } = React;
+
+    const SOUNDS = {
+      SHAKE: 'https://assets.mixkit.co/active_storage/sfx/2014/2014-preview.mp3', // Magic sparkle
+      WIN: 'https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3',   // Tinh tinh
+      BET: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3',   // Tick/Click
+      FAIL: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3',  // Sad fail
+      JOIN: 'https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3',  // Welcome
+    };
+
+    const SYMBOLS = [
+      { id: 'bau', name: 'Bầu', icon: '🎃', color: 'bg-orange-100' },
+      { id: 'cua', name: 'Cua', icon: '🦀', color: 'bg-red-100' },
+      { id: 'ca', name: 'Cá', icon: '🐟', color: 'bg-blue-100' },
+      { id: 'ga', name: 'Gà', icon: '🐓', color: 'bg-yellow-100' },
+      { id: 'tom', name: 'Tôm', icon: '🦐', color: 'bg-pink-100' },
+      { id: 'nai', name: 'Nai', icon: '🦌', color: 'bg-amber-100' },
+    ];
+
+    const BOT_NAMES = ["Bé Thỏ Loli 🐰", "Mèo Bánh Bao 🐱", "Gấu Trà Sữa 🐻"];
+    const BOT_AVATARS = [
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=babyrabbit",
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=cutebao",
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=milkteabear"
+    ];
+
+    function App() {
+      // Setup / Auth states
+      const [name, setName] = useState('');
+      const [joined, setJoined] = useState(false);
+      const [gmBalanceInput, setGmBalanceInput] = useState('200000');
+      const [isGmSet, setIsGmSet] = useState(false);
+      const [isMuted, setIsMuted] = useState(false);
+
+      // Gameplay states
+      const [status, setStatus] = useState('BETTING'); // 'BETTING' | 'SHAKING' | 'RESULT' | 'GAME_OVER'
+      const [timer, setTimer] = useState(0);
+      const [results, setResults] = useState([]);
+      const [history, setHistory] = useState([]);
+      const [gmBalance, setGmBalance] = useState(0);
+
+      // Players list (User is always players[0])
+      const [players, setPlayers] = useState([]);
+      const [currentBets, setCurrentBets] = useState({});
+      const [lastWin, setLastWin] = useState(0);
+
+      // Audio setup helper
+      const playSound = useCallback((soundUrl) => {
+        if (isMuted) return;
+        const audio = new Audio(soundUrl);
+        audio.play().catch(e => console.log('Audio playback blocked:', e));
+      }, [isMuted]);
+
+      // Handle user join
+      const handleJoin = () => {
+        if (name.trim()) {
+          setJoined(true);
+          playSound(SOUNDS.JOIN);
+          
+          // Initializing players (User + 3 bots)
+          const userObj = {
+            id: 'user_1',
+            name: name,
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+            netProfit: 0,
+            bets: {},
+            isReady: false,
+            lastWin: 0
+          };
+
+          const botObjs = BOT_NAMES.map((botName, idx) => ({
+            id: `bot_${idx}`,
+            name: botName,
+            avatar: BOT_AVATARS[idx],
+            netProfit: 0,
+            bets: {},
+            isReady: false,
+            lastWin: 0
+          }));
+
+          setPlayers([userObj, ...botObjs]);
+        }
+      };
+
+      // Set GM balance to start
+      const handleSetGmBalance = () => {
+        const bal = parseInt(gmBalanceInput);
+        if (bal > 0) {
+          setGmBalance(bal);
+          setIsGmSet(true);
+          setStatus('BETTING');
+          
+          // Reset game stats for new session
+          setPlayers(prev => prev.map(p => ({
+            ...p,
+            netProfit: 0,
+            bets: {},
+            isReady: false,
+            lastWin: 0
+          })));
+          setHistory([]);
+          setResults([]);
+          setLastWin(0);
+          setCurrentBets({});
+        }
+      };
+
+      // Placing a bet
+      const placeBet = (symbolId, amount) => {
+        if (status !== 'BETTING' || players[0]?.isReady) return;
+        setCurrentBets(prev => ({
+          ...prev,
+          [symbolId]: (prev[symbolId] || 0) + amount
+        }));
+        playSound(SOUNDS.BET);
+      };
+
+      // Clear pending bets
+      const handleClearBets = () => {
+        if (!players[0]?.isReady) {
+          setCurrentBets({});
+        }
+      };
+
+      // Confirm user bets & trigger Bots’ simulated betting
+      const handleConfirmBet = () => {
+        if (Object.keys(currentBets).length > 0) {
+          // Update user's bets & mark ready
+          setPlayers(prev => {
+            const updated = [...prev];
+            updated[0] = {
+              ...updated[0],
+              bets: { ...currentBets },
+              isReady: true
+            };
+            return updated;
+          });
+
+          // Simulate bot bets and readiness staggered nicely
+          let readyCount = 1;
+          players.slice(1).forEach((bot, idx) => {
+            setTimeout(() => {
+              // Bots bet randomly on 1-3 symbols
+              const botBets = {};
+              const numBets = Math.floor(Math.random() * 3) + 1;
+              for (let i = 0; i < numBets; i++) {
+                const randomSymObj = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                const randomAmt = [1000, 2000, 5000][Math.floor(Math.random() * 3)];
+                botBets[randomSymObj.id] = (botBets[randomSymObj.id] || 0) + randomAmt;
+                playSound(SOUNDS.BET);
+              }
+
+              setPlayers(curr => {
+                const updated = [...curr];
+                updated[idx + 1] = {
+                  ...updated[idx + 1],
+                  bets: botBets,
+                  isReady: true
+                };
+                return updated;
+              });
+
+              readyCount++;
+              // Once all bots are ready, advance to Shaking
+              if (readyCount === 4) {
+                setTimeout(() => {
+                  startShakingPhase();
+                }, 1000);
+              }
+            }, (idx + 1) * 800);
+          });
+        }
+      };
+
+      // Trigger the Shaking loop
+      const startShakingPhase = () => {
+        setStatus('SHAKING');
+        playSound(SOUNDS.SHAKE);
+        
+        // Simulating the Shaking timer countdown (5s)
+        let count = 5;
+        setTimer(count);
+        const interval = setInterval(() => {
+          count--;
+          if (count > 0) {
+            setTimer(count);
+          } else {
+            clearInterval(interval);
+            revealResults();
+          }
+        }, 1000);
+      };
+
+      // Reveal game round outcome
+      const revealResults = () => {
+        // Draw 3 random symbols
+        const newResults = [
+          SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)].id,
+          SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)].id,
+          SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)].id,
+        ];
+
+        setResults(newResults);
+
+        // Count outcomes
+        const counts = {};
+        newResults.forEach(s => counts[s] = (counts[s] || 0) + 1);
+
+        // Calculate all payouts and changes
+        setPlayers(prev => {
+          let updatedPlayers = [...prev];
+          let totalPayoutNeeded = 0;
+          let totalBetsCollected = 0;
+
+          // First Pass: Calculate
+          updatedPlayers.forEach(p => {
+            let playerWin = 0;
+            let playerBet = 0;
+
+            Object.entries(p.bets).forEach(([sym, amt]) => {
+              playerBet += amt;
+              if (counts[sym]) {
+                playerWin += (counts[sym] + 1) * amt;
+              }
+            });
+
+            totalPayoutNeeded += playerWin;
+            totalBetsCollected += playerBet;
+          });
+
+          const netGmChange = totalBetsCollected - totalPayoutNeeded;
+
+          // Check for House (GM) Bankruptcy
+          if (gmBalance + netGmChange < 0) {
+            setTimeout(() => {
+              setStatus('GAME_OVER');
+              playSound(SOUNDS.FAIL);
+            }, 600);
+            return prev;
+          }
+
+          // Second Pass: Safe to apply if Boss can afford it
+          updatedPlayers = updatedPlayers.map((p, idx) => {
+            let playerWin = 0;
+            let playerBet = 0;
+
+            Object.entries(p.bets).forEach(([sym, amt]) => {
+              playerBet += amt;
+              if (counts[sym]) {
+                playerWin += (counts[sym] + 1) * amt;
+              }
+            });
+
+            if (idx === 0) {
+              setLastWin(playerWin);
+              if (playerWin > 0) {
+                playSound(SOUNDS.WIN);
+              }
+            }
+
+            return {
+              ...p,
+              lastWin: playerWin,
+              netProfit: p.netProfit + (playerWin - playerBet),
+              bets: {},
+              isReady: false
+            };
+          });
+
+          // Payout successful
+          setGmBalance(curr => curr + netGmChange);
+          setHistory(hist => [newResults, ...hist].slice(0, 10));
+          setCurrentBets({});
+          setStatus('RESULT');
+
+          // Result display countdown (5s) before returning to Betting state
+          let resTimer = 5;
+          setTimer(resTimer);
+          const resInterval = setInterval(() => {
+            resTimer--;
+            if (resTimer > 0) {
+              setTimer(resTimer);
+            } else {
+              clearInterval(resInterval);
+              setStatus('BETTING');
+              setResults([]);
+              setLastWin(0);
+            }
+          }, 1000);
+
+          return updatedPlayers;
+        });
+      };
+
+      // Calculated values
+      const me = players[0];
+      // Sum all current bets on each symbol for show pool size
+      const totalBets = {};
+      SYMBOLS.forEach(s => {
+        let total = currentBets[s.id] || 0;
+        players.forEach(p => {
+          total += (p.bets[s.id] || 0);
+        });
+        totalBets[s.id] = total;
+      });
+
+      // Utility formatting
+      const formatCurrency = (amount) => amount.toLocaleString('vi-VN') + ' VNĐ';
+      const formatProfit = (amount) => {
+        const sign = amount > 0 ? '+' : '';
+        return sign + amount.toLocaleString('vi-VN');
+      };
+
+      // View 1: Welcome/Avatar Setup Screen
+      if (!joined) {
+        return (
+          <div className="min-h-screen bg-[#FFB6C1] flex items-center justify-center p-4 relative overflow-hidden">
+            <div className="absolute top-10 left-10 text-white/30 floating">
+              <svg className="w-20 h-20 fill-current" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </div>
+            <div className="absolute bottom-10 right-10 text-white/30 floating" style={{ animationDelay: '1.5s' }}>
+              <span className="text-8xl">🌸</span>
+            </div>
+
+            <div className="bg-white/95 backdrop-blur-md p-8 rounded-[40px] shadow-2xl max-w-md w-full border-8 border-[#FF69B4]/20 relative z-10 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="bg-[#FF69B4] p-4 rounded-full shadow-lg pulse-soft">
+                  <span className="text-3xl text-white">✨</span>
+                </div>
+              </div>
+              <h1 className="text-4xl font-black text-[#D02090] mb-2 uppercase tracking-tight text-3d space-grotesk">
+                Minh Diệu xđ
+              </h1>
+              <p className="text-[#FF69B4] mb-8 font-semibold italic">Sòng bài kẹo ngọt offline 🌸</p>
+              
+              <div className="space-y-6 text-left">
+                <div>
+                  <label className="block text-[#D02090] font-black mb-2 uppercase text-xs tracking-widest">Biệt danh đáng yêu</label>
+                  <input 
+                    type="text" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Nhập tên của bạn yêu..."
+                    className="w-full p-4 rounded-2xl border-2 border-[#FFB6C1] bg-white text-[#D02090] focus:outline-none focus:ring-4 focus:ring-[#FFB6C1]/50 placeholder-[#FFB6C1] font-bold text-lg"
+                  />
+                </div>
+                <button 
+                  onClick={handleJoin}
+                  disabled={!name.trim()}
+                  className="w-full pink-button text-white font-black py-4 rounded-2xl transition-all uppercase tracking-widest shadow-lg disabled:opacity-50 text-lg"
+                >
+                  Vào Chơi Thôi! ✨
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // View 2: Set Game Master Balance Screen
+      if (joined && !isGmSet) {
+        return (
+          <div className="min-h-screen bg-[#FFF0F5] flex items-center justify-center p-4 relative overflow-hidden">
+            <div className="bg-white/95 backdrop-blur-md p-8 rounded-[40px] shadow-2xl max-w-md w-full border-8 border-[#FF69B4]/20 relative z-10 text-center">
+              <div className="w-24 h-24 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-[#FF69B4] shadow-md pulse-soft">
+                <span className="text-5xl">👸</span>
+              </div>
+              <h2 className="text-2xl font-black text-[#D02090] mb-2 uppercase space-grotesk">Thiết lập Quản trò</h2>
+              <p className="text-[#FF69B4] mb-6 font-semibold italic">"Bà chủ XH đen với khuôn mặt thiên thần" 👑</p>
+              
+              <div className="space-y-6 text-left">
+                <div>
+                  <label className="block text-[#D02090] font-black mb-2 uppercase text-xs tracking-widest">Số tiền bà chủ mang theo</label>
+                  <input 
+                    type="number" 
+                    value={gmBalanceInput}
+                    onChange={(e) => setGmBalanceInput(e.target.value)}
+                    className="w-full p-4 rounded-2xl border-2 border-[#FFB6C1] bg-white text-[#D02090] focus:outline-none focus:ring-4 focus:ring-[#FFB6C1]/50 font-black text-xl text-center"
+                  />
+                </div>
+                <button 
+                  onClick={handleSetGmBalance}
+                  className="w-full pink-button text-white font-black py-4 rounded-2xl transition-all uppercase tracking-widest shadow-lg text-lg"
+                >
+                  Bắt Đầu Sòng Bài! 🔮
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // View 3: Game Over (House Bankrupt) Screen
+      if (status === 'GAME_OVER') {
+        return (
+          <div className="min-h-screen bg-[#D02090] flex items-center justify-center p-4 relative overflow-hidden">
+            <div className="absolute top-1/4 left-10 text-white/10 spin-slow">
+              <span className="text-[150px]">💸</span>
+            </div>
+            
+            <div className="bg-white p-10 rounded-[50px] shadow-2xl max-w-lg w-full text-center border-8 border-white/40 relative z-10">
+              <div className="text-8xl mb-6 floating">💸</div>
+              <h1 className="text-4xl font-black text-[#D02090] mb-4 uppercase tracking-tighter space-grotesk text-3d animate-bounce">
+                Bà chủ hết tiền rồi!
+              </h1>
+              <p className="text-[#FF69B4] text-lg mb-8 font-bold italic leading-relaxed px-4">
+                "Bà chủ XH đen với khuôn mặt thiên thần" đã cạn kiệt ngân khố để rải tiền cho các thiên sứ chiến thắng rồi... 🌸
+              </p>
+              
+              <div className="bg-pink-50 p-6 rounded-3xl mb-8 border-2 border-dashed border-[#FFB6C1] shadow-inner text-left">
+                <p className="text-xs text-[#D02090] font-black uppercase mb-4 tracking-widest text-center">Bảng đọ ví của chị em</p>
+                <div className="space-y-3">
+                  {players.map(p => (
+                    <div key={p.id} className="flex justify-between items-center bg-white py-3 px-4 rounded-2xl border border-[#FFB6C1]/40">
+                      <div className="flex items-center gap-3">
+                        <img src={p.avatar} className="w-10 h-10 rounded-full border border-pink-200" />
+                        <span className="font-extrabold text-[#D02090] text-sm">{p.name} {p.id === 'user_1' && '🌸'}</span>
+                      </div>
+                      <span className={`font-black text-sm ${p.netProfit > 0 ? 'text-green-500' : p.netProfit < 0 ? 'text-red-500' : 'text-[#FF69B4]'}`}>
+                        {formatProfit(p.netProfit)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <button 
+                onClick={() => { setIsGmSet(false); setGmBalanceInput('200000'); }}
+                className="w-full pink-button text-white font-black py-4 rounded-2xl transition-all uppercase tracking-widest shadow-lg text-lg"
+              >
+                Chơi tiếp / Nạp vốn cho Bà chủ 🎟️
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      // View 4: Primary Gameplay View
+      return (
+        <div className="min-h-screen bg-[#FFF0F5] text-[#D02090] overflow-x-hidden pb-32">
+          
+          {/* Main Top Header bar */}
+          <header className="bg-white/90 backdrop-blur-md p-4 shadow-md border-b-2 border-[#FFB6C1] sticky top-0 z-50">
+            <div className="max-w-6xl mx-auto flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="bg-[#FF69B4] p-2 rounded-2xl shadow-sm">
+                  <span className="text-xl text-white">🎀</span>
+                </div>
+                <h1 className="font-black text-xl hidden sm:block uppercase tracking-tight text-[#D02090] space-grotesk">
+                  Minh Diệu xđ
+                </h1>
+              </div>
+              
+              {/* Balances & Mute controllers */}
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setIsMuted(prev => !prev)}
+                  className="p-2.5 rounded-full bg-[#FFB6C1]/20 border border-[#FFB6C1] text-[#D02090] hover:bg-[#FFB6C1]/40 transition-all shadow-sm"
+                >
+                  {isMuted ? (
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM19 12c0 3.28-2.12 6.07-5 7.14v2.01c3.98-1.11 7-4.73 7-8.15 0-3.41-3.02-7.04-7-8.15v2.01c2.88 1.07 5 3.86 5 7.14zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.03c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                  ) : (
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                  )}
+                </button>
+
+                <div className="flex flex-col items-end">
+                  <span className="text-[9px] font-black uppercase text-[#FF69B4] tracking-widest space-grotesk">Ví Bà chủ XH Đen 👑</span>
+                  <div className="flex items-center gap-1.5 bg-white px-3 py-1 rounded-full border border-[#FFB6C1] shadow-sm">
+                    <span className="text-xs font-extrabold text-[#D02090]">{formatCurrency(gmBalance)}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 bg-[#FFB6C1]/20 px-4 py-2 rounded-full border border-[#FFB6C1] shadow-sm">
+                  <div className="bg-[#FF69B4] text-white p-1 rounded-full text-xs">✨</div>
+                  <span className={`font-black tracking-tight text-sm ${me?.netProfit > 0 ? 'text-green-500' : me?.netProfit < 0 ? 'text-red-500' : 'text-[#D02090]'}`}>
+                    {formatProfit(me?.netProfit || 0)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <img src={me?.avatar} className="w-10 h-10 rounded-full border-2 border-[#FF69B4] bg-white shadow-sm" />
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <main className="max-w-6xl mx-auto p-4 space-y-6">
+            
+            {/* Countdown / Game state announcements */}
+            <div className="flex flex-col items-center justify-center py-6 relative text-center">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-[#FF69B4]/10 rounded-full blur-3xl -z-10" />
+              
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-2xl font-black uppercase tracking-tight text-[#D02090] text-3d space-grotesk">
+                  {status === 'BETTING' && '🌸 Đến giờ đặt cược 🌸'}
+                  {status === 'SHAKING' && '🎲 Đang lắc kẹo... 🎲'}
+                  {status === 'RESULT' && '✨ Kết quả nè bạn yêu! ✨'}
+                </span>
+              </div>
+
+              {/* Status conditional details */}
+              {status === 'BETTING' && (
+                <div className="flex flex-col items-center gap-2 mt-2">
+                  <p className="text-sm font-bold text-[#FF69B4] italic animate-pulse">
+                    Mời chị em đặt đơn, chờ chốt để xốc kẹo...
+                  </p>
+                  <div className="flex gap-2">
+                    {players.map(p => (
+                      <div 
+                        key={p.id} 
+                        className={`w-3.5 h-3.5 rounded-full border-2 border-white transition-colors duration-300 shadow-sm ${p.isReady ? 'bg-pink-500 shadow-pink-300' : 'bg-pink-100'}`} 
+                        title={`${p.name}: ${p.isReady ? 'Đã Chốt' : 'Đang sắm hàng'}`} 
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Time Indicator Circle */}
+              {status !== 'BETTING' && (
+                <div className="relative w-20 h-20 flex items-center justify-center mt-3">
+                  <svg className="w-full h-full -rotate-90">
+                    <circle cx="40" cy="40" r="36" fill="transparent" stroke="rgba(255,182,193,0.3)" strokeWidth="6"/>
+                    <circle 
+                      cx="40" cy="40" r="36" 
+                      fill="transparent" 
+                      stroke="#FF69B4" 
+                      strokeWidth="6"
+                      strokeDasharray={226}
+                      strokeDashoffset={226 - (226 * timer) / 5}
+                      className="transition-all duration-1000"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="absolute text-2xl font-black text-[#D02090] space-grotesk">{timer}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Shaking Animation Screen Display */}
+            <div className="flex flex-col items-center justify-center py-4 gap-4">
+              {status === 'SHAKING' ? (
+                <div className="w-48 h-48 bg-white rounded-[60px] border-8 border-[#FFB6C1] shadow-2xl flex items-center justify-center relative overflow-hidden floating">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white to-[#FFF0F5] opacity-80" />
+                  <span className="text-8xl relative z-10 spin-slow">🎀</span>
+                  <div className="absolute top-3 left-4 text-pink-300">⭐</div>
+                  <div className="absolute bottom-3 right-4 text-pink-300">💖</div>
+                </div>
+              ) : status === 'RESULT' ? (
+                <div className="flex flex-col items-center gap-6">
+                  {/* Results dice roll slots */}
+                  <div className="flex gap-4">
+                    {results.map((res, i) => {
+                      const symObj = SYMBOLS.find(s => s.id === res);
+                      return (
+                        <div 
+                          key={i}
+                          className="w-24 h-24 bg-white rounded-3xl border-4 border-[#FFB6C1] shadow-xl flex items-center justify-center text-6xl relative floating"
+                          style={{ animationDelay: `${i * 0.2}s` }}
+                        >
+                          <span className="absolute -top-1 -right-1 text-pink-400 text-sm">⭐</span>
+                          {symObj?.icon}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Personal victory announcement toast */}
+                  {lastWin > 0 && (
+                    <div className="bg-white px-10 py-6 rounded-[40px] border-4 border-[#FF69B4] shadow-[0_10px_0_#FF69B4] relative overflow-hidden transition-transform transform scale-105">
+                      <div className="absolute -top-3 -left-3 text-pink-200 opacity-60 text-2xl">✨</div>
+                      <div className="absolute -bottom-3 -right-3 text-pink-200 opacity-60 text-2xl">💖</div>
+                      <p className="text-xl font-black text-[#D02090] text-center relative z-10 space-grotesk">
+                        Chúc mừng bạn yêu! 🎉<br />
+                        <span className="text-[#FF69B4] text-3xl font-black">+{formatCurrency(lastWin)}</span> 🌸
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Static idle visual bowl container */
+                <div className="w-48 h-48 bg-white/40 rounded-[60px] border-4 border-dashed border-[#FFB6C1] flex flex-col items-center justify-center gap-2">
+                  <span className="text-5xl opacity-40">👸</span>
+                  <span className="text-[#FFB6C1] font-black uppercase tracking-widest text-xs">Chờ rải kẹo</span>
+                </div>
+              )}
+            </div>
+
+            {/* Grid layout containing the 6 symbol selectors */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-4">
+              {SYMBOLS.map((symbol) => {
+                const myBet = currentBets[symbol.id] || 0;
+                const poolTotal = totalBets[symbol.id] || 0;
+                const isReady = me?.isReady;
+
+                return (
+                  <div
+                    key={symbol.id}
+                    onClick={() => !isReady && placeBet(symbol.id, 1000)}
+                    className={`relative p-6 rounded-[40px] transition-all overflow-hidden card-3d select-none
+                      ${myBet > 0 ? 'border-[#FF69B4] ring-4 ring-[#FF69B4]/20' : 'border-[#FFB6C1]'}
+                      ${isReady ? 'opacity-85 cursor-not-allowed grayscale-[0.1]' : 'cursor-pointer'}`}
+                  >
+                    
+                    {/* Sum of all player bets on this symbol */}
+                    {poolTotal > 0 && (
+                      <div className="absolute top-3 left-3 bg-[#FFB6C1]/40 text-[#D02090] px-2.5 py-0.5 rounded-full text-[9px] font-black border border-[#FFB6C1] shadow-xs">
+                        Tổng: {poolTotal.toLocaleString()}
+                      </div>
+                    )}
+
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-24 h-24 bg-[#FFF0F5] rounded-full flex items-center justify-center mb-2 shadow-inner border-4 border-white">
+                        <span className="text-6xl floating">{symbol.icon}</span>
+                      </div>
+                      <span className="font-black uppercase tracking-tight text-[#D02090] text-lg space-grotesk">
+                        {symbol.name}
+                      </span>
+                      
+                      {/* Individual quick selection tokens */}
+                      <div className="flex flex-wrap justify-center gap-2 mt-3">
+                        {[1000, 2000, 5000, 10000].map(amt => (
+                          <button
+                            key={amt}
+                            onClick={(e) => { e.stopPropagation(); !isReady && placeBet(symbol.id, amt); }}
+                            disabled={isReady}
+                            className="bg-white text-[#FF69B4] text-[10px] font-black px-3 py-1.5 rounded-full border-2 border-[#FFB6C1] hover:bg-[#FF69B4] hover:text-white hover:border-[#FF69B4] transition-all shadow-sm disabled:opacity-50"
+                          >
+                            {amt / 1000}k
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Active bet banner element */}
+                    {myBet > 0 && (
+                      <div className="absolute top-3 right-3 bg-[#FF69B4] text-white px-3.5 py-1 rounded-full text-xs font-black shadow-md border-2 border-white">
+                        {myBet.toLocaleString()}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Dynamic Bottom Controls Action Belt */}
+            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md p-4 border-t-2 border-[#FFB6C1] shadow-2xl z-50">
+              <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+                <button
+                  onClick={handleClearBets}
+                  disabled={status !== 'BETTING' || Object.keys(currentBets).length === 0 || me?.isReady}
+                  className="bg-white text-[#FF69B4] px-6 py-4 rounded-2xl font-black uppercase tracking-widest border-2 border-[#FFB6C1] hover:bg-[#FFF0F5] transition-all disabled:opacity-30 text-sm shadow-sm"
+                >
+                  Xóa Cược 🍬
+                </button>
+                
+                <button
+                  onClick={handleConfirmBet}
+                  disabled={status !== 'BETTING' || Object.keys(currentBets).length === 0 || me?.isReady}
+                  className="pink-button text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg flex items-center gap-2 text-lg"
+                >
+                  {me?.isReady ? 'Đã Chốt! ✨' : 'Chốt Đơn! 🎀'}
+                </button>
+              </div>
+            </div>
+
+            {/* Auxiliary data panels (History logs, Active session players) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+              
+              {/* Active lobby session comrades */}
+              <div className="bg-white/70 p-6 rounded-[40px] border-2 border-[#FFB6C1] shadow-sm glass-card">
+                <div className="flex items-center gap-2.5 mb-6">
+                  <span className="text-xl">👩‍❤️‍👩</span>
+                  <h2 className="font-extrabold uppercase tracking-tight text-[#D02090] text-md space-grotesk">Hội chị em cùng sòng ({players.length}/4)</h2>
+                </div>
+                <div className="space-y-4">
+                  {players.map(p => (
+                    <div key={p.id} className="flex items-center justify-between bg-white p-4 rounded-3xl border border-[#FFB6C1]/50 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <img src={p.avatar} className="w-12 h-12 rounded-full bg-[#FFF0F5] border-2 border-[#FFB6C1]" />
+                        <div>
+                          <p className="font-extrabold text-sm text-[#D02090]">{p.name} {p.id === 'user_1' && '🌸'}</p>
+                          <p className={`text-xs font-black ${p.netProfit > 0 ? 'text-green-500' : p.netProfit < 0 ? 'text-red-500' : 'text-[#FF69B4]'}`}>
+                            {formatProfit(p.netProfit)} Lời/Lỗ
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {p.isReady && (
+                          <div className="bg-pink-100 text-[#FF69B4] px-3.5 py-1.5 rounded-full text-[10px] font-black border border-[#FFB6C1] shadow-xs">
+                            ĐÃ CHỐT ✨
+                          </div>
+                        )}
+                        {/* Show bot's total bets if any */}
+                        {Object.keys(p.bets).length > 0 && (
+                          <span className="text-[10px] text-pink-400 font-bold self-center">
+                            Đang đặt cược...
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Historic rounds records */}
+              <div className="bg-white/70 p-6 rounded-[40px] border-2 border-[#FFB6C1] shadow-sm glass-card">
+                <div className="flex items-center gap-2.5 mb-6">
+                  <span className="text-xl">📝</span>
+                  <h2 className="font-extrabold uppercase tracking-tight text-[#D02090] text-md space-grotesk">Sổ Nhật Ký Kẹo Ngọt</h2>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {history.map((h, i) => (
+                    <div key={i} className="flex gap-1.5 bg-white p-3 rounded-2xl border border-[#FFB6C1]/30 shadow-xs justify-center transition-transform hover:scale-105">
+                      {h.map((res, j) => {
+                        const symObj = SYMBOLS.find(s => s.id === res);
+                        return (
+                          <span key={j} className="text-2xl" title={symObj?.name}>{symObj?.icon}</span>
+                        );
+                      })}
+                    </div>
+                  ))}
+                  {history.length === 0 && (
+                    <div className="col-span-2 text-center text-sm text-[#FFB6C1] italic py-8">Chưa ghi lại kỉ niệm nào... 🌸</div>
+                  )}
+                </div>
+              </div>
+
+            </div>
+
+          </main>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
